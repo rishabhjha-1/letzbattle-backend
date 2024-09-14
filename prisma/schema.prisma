@@ -14,7 +14,18 @@ enum USEROLE{
   ADMIN
   USER
 }
- 
+
+model Event {
+  id            String     @id @default(cuid())
+  name          String
+  date          DateTime
+  entryFees     Int
+  prize         String
+  seatsLeft     Int
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
 model User {
   id            String          @id @default(cuid())
   name          String?
