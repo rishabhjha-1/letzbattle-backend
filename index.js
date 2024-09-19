@@ -119,6 +119,40 @@ app.post('/api/events', authenticateToken, async (req, res) => {
   }
 });
 
+
+app.get('/api/events/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Retrieve a specific event by ID
+    const event = await prisma.event.findUnique({
+      where: { id: id },
+    });
+
+    if (!event) { 
+      return res.status(404).json({ message: 'Event not found' });
+    }n 
+
+    res.status(200).json({ event });
+  } catch (error) {
+    console.error('Error fetching event:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+// Get all events API route
+app.get('/api/events', async (req, res) => {
+  try {
+    // Retrieve all events from the database
+    const events = await prisma.event.findMany();
+    res.status(200).json({ events });
+  } catch (error) {
+    console.error('Error fetching events:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.get('/api/user', authenticateToken, async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
