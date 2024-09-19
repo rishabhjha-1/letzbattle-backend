@@ -131,7 +131,7 @@ app.get('/api/events/:id', async (req, res) => {
 
     if (!event) { 
       return res.status(404).json({ message: 'Event not found' });
-    }n 
+    }
 
     res.status(200).json({ event });
   } catch (error) {
