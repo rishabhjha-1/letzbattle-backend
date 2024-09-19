@@ -1,50 +1,69 @@
 // prisma/schema.prisma
 datasource db {
-  provider  = "postgresql"
-  url  	    = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
   // uncomment next line if you use Prisma <5.10
   // directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
-generator client{
-  provider="prisma-client-js"
+generator client {
+  provider = "prisma-client-js"
 }
 
-enum USEROLE{
+enum USEROLE {
   ADMIN
   USER
 }
 
 model Event {
-  id            String     @id @default(cuid())
-  name          String
-  date          DateTime
-  entryFees     Int
-  prize         String
-  seatsLeft     Int
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id          String        @id @default(cuid())
+  name        String
+  date        DateTime
+  entryFees   Int
+  prize       String
+  seatsLeft   Int
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Participant Participant[]
+}
+
+model Participant {
+  id          String  @id @default(cuid())
+  captainName String
+  teamName    String
+  player1Name String
+  player2Name String
+  player3Name String
+  player4Name String
+  player5Name String? // Optional player
+  email       String
+  phoneNumber String
+  event       Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId     String // Foreign key to Event
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model User {
-  id            String          @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String          @unique
+  email         String    @unique
   emailVerified DateTime?
   image         String?
-  role          USEROLE         @default(USER)
-  isOnboarded   Boolean         @default(false)
+  role          USEROLE   @default(USER)
+  isOnboarded   Boolean   @default(false)
   accounts      Account[]
 
-  age           Int?
-  gender        String?
-  phoneNumber   String?
-  instagramId   String?
-  bgmiId        String?
+  age            Int?
+  gender         String?
+  phoneNumber    String?
+  instagramId    String?
+  bgmiId         String?
   interestedGame String?
 
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Account {
@@ -59,11 +78,11 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@id([provider, providerAccountId])
 }

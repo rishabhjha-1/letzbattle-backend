@@ -170,6 +170,76 @@ app.get('/api/user', authenticateToken, async (req, res) => {
   }
 });
 
+// API route to create a new participant for an event
+app.post('/api/events/:eventId/participants', authenticateToken, async (req, res) => {
+  const { eventId } = req.params;
+  const { captainName, teamName, player1Name, player2Name, player3Name, player4Name, player5Name, email, phoneNumber } = req.body;
+
+  // Validate required fields
+  if (!captainName || !teamName || !player1Name || !player2Name || !player3Name || !email || !phoneNumber) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    // Check if the event exists
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+    });
+
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    // Create the participant
+    const newParticipant = await prisma.participant.create({
+      data: {
+        captainName,
+        teamName,
+        player1Name,
+        player2Name,
+        player3Name,
+        player4Name,
+        player5Name, // This can be null
+        email,
+        phoneNumber,
+        eventId, // Link to the event
+      },
+    });
+
+    res.status(201).json({ message: 'Participant registered successfully', participant: newParticipant });
+  } catch (error) {
+    console.error('Error creating participant:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// API route to get all participants for a specific event
+app.get('/api/events/:eventId/participants', async (req, res) => {
+  const { eventId } = req.params;
+
+  try {
+    // Check if the event exists
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+    });
+
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    // Get all participants for the event
+    const participants = await prisma.participant.findMany({
+      where: { eventId: eventId },
+    });
+
+    res.status(200).json({ participants });
+  } catch (error) {
+    console.error('Error fetching participants:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 
 // Start the server
 const PORT = process.env.PORT || 3001;
