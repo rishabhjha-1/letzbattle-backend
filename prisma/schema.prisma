@@ -18,6 +18,10 @@ enum USEROLE {
 model Event {
   id          String        @id @default(cuid())
   name        String
+  image       String?
+  expired     Boolean       @default(false)
+  isopen      Boolean       @default(true)
+  gameName    String?
   date        DateTime
   entryFees   Int
   prize       String
