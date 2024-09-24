@@ -59,6 +59,10 @@ const authenticateToken = async (req, res, next) => {
   }
 };
 
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'Server is up and running!' });
+});
+
 
 // Onboarding API route
 app.post('/api/onboard', authenticateToken, async (req, res) => {
@@ -129,23 +133,9 @@ app.get('/api/events/:id', async (req, res) => {
 
   try {
     // Retrieve a specific event by ID
-       const events = await prisma.event.findMany({
-      select: {
-        id: true,
-        name: true,
-        date: true,
-        entryFees: true,
-        prize: true,
-        seatsLeft: true,
-        image: true,      // Include image
-        expired: true,    // Include expired
-        isopen: true,     // Include isopen
-        gameName: true,   // Include gameName
-        createdAt: true,
-        updatedAt: true,
-      }
+    const event = await prisma.event.findUnique({
+      where: { id: id },
     });
-
 
     if (!event) { 
       return res.status(404).json({ message: 'Event not found' });
