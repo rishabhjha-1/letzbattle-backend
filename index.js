@@ -129,9 +129,23 @@ app.get('/api/events/:id', async (req, res) => {
 
   try {
     // Retrieve a specific event by ID
-    const event = await prisma.event.findUnique({
-      where: { id: id },
+       const events = await prisma.event.findMany({
+      select: {
+        id: true,
+        name: true,
+        date: true,
+        entryFees: true,
+        prize: true,
+        seatsLeft: true,
+        image: true,      // Include image
+        expired: true,    // Include expired
+        isopen: true,     // Include isopen
+        gameName: true,   // Include gameName
+        createdAt: true,
+        updatedAt: true,
+      }
     });
+
 
     if (!event) { 
       return res.status(404).json({ message: 'Event not found' });
