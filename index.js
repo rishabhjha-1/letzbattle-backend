@@ -7,6 +7,8 @@ const { OAuth2Client } = require('google-auth-library');
 const app = express();
 const prisma = new PrismaClient();
 const cors = require('cors'); 
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
 
 // Google OAuth client ID
 const CLIENT_ID = '739377018987-q5r2dqm40em1t0objd2vspdnset4ptcs.apps.googleusercontent.com';
@@ -245,7 +247,43 @@ app.get('/api/events/:eventId/participants', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+const razorpay = new Razorpay({
+  key_id: 'RAZORPAY_API_KEY',   
+  key_secret: 'RAZORPAY_APT_SECRET', 
+});
 
+// Create Razorpay order
+app.post('/api/payment/order', async (req, res) => {
+  try {
+    const { amount, currency } = req.body;
+
+    const options = {
+      amount: amount * 100, // Amount in paise
+      currency,
+      receipt: 'order_rcptid_11',
+    };
+
+    const order = await razorpay.orders.create(options);
+    res.json({ orderId: order.id, amount: order.amount });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create Razorpay order' });
+  }
+});
+
+// Verify payment
+app.post('/api/payment/verify', (req, res) => {
+  const { orderId, paymentId, signature } = req.body;
+
+  const hmac = crypto.createHmac('sha256', 'YOUR_RAZORPAY_KEY_SECRET');
+  hmac.update(orderId + "|" + paymentId);
+  const generatedSignature = hmac.digest('hex');
+
+  if (generatedSignature === signature) {
+    res.json({ message: 'Payment verified successfully' });
+  } else {
+    res.status(400).json({ error: 'Payment verification failed' });
+  }
+});
 
 
 // Start the server
