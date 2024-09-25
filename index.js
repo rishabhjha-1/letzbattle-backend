@@ -252,6 +252,7 @@ const razorpay = new Razorpay({
   key_secret: 'RAZORPAY_APT_SECRET', 
 });
 
+
 // Create Razorpay order
 app.post('/api/payment/order', async (req, res) => {
   try {
