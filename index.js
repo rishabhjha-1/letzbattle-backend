@@ -248,8 +248,8 @@ app.get('/api/events/:eventId/participants', async (req, res) => {
   }
 });
 const razorpay = new Razorpay({
-  key_id: 'RAZORPAY_API_KEY',   
-  key_secret: 'RAZORPAY_APT_SECRET', 
+  key_id: process.env.RAZORPAY_API_KEY,   
+  key_secret: process.env.RAZORPAY_APT_SECRET, 
 });
 
 
