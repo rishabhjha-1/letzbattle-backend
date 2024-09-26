@@ -275,7 +275,7 @@ app.post('/api/payment/order', async (req, res) => {
 app.post('/api/payment/verify', (req, res) => {
   const { orderId, paymentId, signature } = req.body;
 
-  const hmac = crypto.createHmac('sha256', 'YOUR_RAZORPAY_KEY_SECRET');
+  const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_APT_SECRET);
   hmac.update(orderId + "|" + paymentId);
   const generatedSignature = hmac.digest('hex');
 
