@@ -223,7 +223,7 @@ app.post('/api/events/:eventId/participants', authenticateToken, async (req, res
 });
 
 // API route to get all participants for a specific event
-app.get('/api/events/:eventId/participants', async (req, res) => {
+app.get('/api/events/:eventId/participants',authenticateToken, async (req, res) => {
   const { eventId } = req.params;
 
   try {
