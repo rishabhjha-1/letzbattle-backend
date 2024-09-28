@@ -1,6 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const { verifyGoogleToken } = require('../services/googleAuthService');
-const prisma = require('../prismaClient');
+const prisma = require('../config/prismaClient');
 
 const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;

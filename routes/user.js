@@ -2,7 +2,7 @@ const authenticateToken=require('../middleware/authenticateToken');
 const express=require('express');
 const { PrismaClient } = require('@prisma/client');
 const userRouter=express();
-const prisma = require('../prismaClient');
+const prisma = require('../config/prismaClient');
 
 userRouter.get('/',authenticateToken,async (req, res) => {
     try {
