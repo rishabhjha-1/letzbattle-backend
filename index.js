@@ -21,8 +21,7 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is up and running!' });
 });
 
-// Onboarding API route
-app.post('/api/user',userRouter);
+
 
 app.use('/api/events',eventRouter);
 
