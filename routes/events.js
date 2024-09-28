@@ -4,7 +4,7 @@ const authenticateToken = require("../middleware/authenticateToken");
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-eventRouter.post("/",authenticateToken, async (req, res) => {
+eventRouter.post("/", authenticateToken, async (req, res) => {
   const {
     name,
     date,
@@ -17,18 +17,13 @@ eventRouter.post("/",authenticateToken, async (req, res) => {
     image,
   } = req.body;
 
-  // Check if the authenticated user is an admin
-  if (req.user && req.user.role !== "ADMIN") {
-    return res.status(403).json({ message: "Only admins can create events" });
-  }
-
   // Validate required fields
   if (!name || !date || !entryFees || !prize || !seatsLeft) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
   try {
-    // Create the event in the database
+    // Create the event, associating the current user as the host
     const newEvent = await prisma.event.create({
       data: {
         name,
@@ -40,14 +35,88 @@ eventRouter.post("/",authenticateToken, async (req, res) => {
         isopen,
         expired,
         image,
+        hostId: req.user.id, // Associate the event with the authenticated user
       },
     });
 
-    res
-      .status(201)
-      .json({ message: "Event created successfully", event: newEvent });
+    res.status(201).json({ message: "Event created successfully", event: newEvent });
   } catch (error) {
     console.error("Error creating event:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Get all events created by the authenticated user or all events for admins
+eventRouter.get("/my-events", authenticateToken, async (req, res) => {
+  try {
+    let events;
+
+    if (req.user.role === "ADMIN") {
+      // Admins can see all events
+      events = await prisma.event.findMany();
+    } else {
+      // Regular users can see only events they have created
+      events = await prisma.event.findMany({
+        where: { hostId: req.user.id },
+      });
+    }
+
+    res.status(200).json({ events });
+  } catch (error) {
+    console.error("Error fetching events:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Edit an event (only allow the creator or admin to edit)
+eventRouter.put("/:id", authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const {
+    name,
+    date,
+    entryFees,
+    prize,
+    seatsLeft,
+    gameName,
+    isopen,
+    expired,
+    image,
+  } = req.body;
+
+  try {
+    // Find the event
+    const event = await prisma.event.findUnique({
+      where: { id: id },
+    });
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Check if the user is either the creator of the event or an admin
+    if (req.user.id !== event.hostId && req.user.role !== "ADMIN") {
+      return res.status(403).json({ message: "You do not have permission to edit this event" });
+    }
+
+    // Update the event
+    const updatedEvent = await prisma.event.update({
+      where: { id: id },
+      data: {
+        name,
+        date: new Date(date),
+        entryFees,
+        prize,
+        seatsLeft,
+        gameName,
+        isopen,
+        expired,
+        image,
+      },
+    });
+
+    res.status(200).json({ message: "Event updated successfully", event: updatedEvent });
+  } catch (error) {
+    console.error("Error updating event:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
