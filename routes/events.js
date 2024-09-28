@@ -2,7 +2,7 @@ const express = require("express");
 const eventRouter=express();
 const authenticateToken = require("../middleware/authenticateToken");
 const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../prismaClient');
 
 eventRouter.post("/", authenticateToken, async (req, res) => {
   const {
