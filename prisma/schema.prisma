@@ -29,11 +29,7 @@ model Event {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   Participant Participant[]
-  reviewed    Boolean       @default(false)
 
-  // Relation to User (Host)
-  host        User          @relation(fields: [hostId], references: [id],onDelete: Cascade)
-  hostId      String        // Foreign key to User (Host)
 
 }
 
@@ -76,7 +72,6 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relation to events they host
-  events        Event[]    @relation("UserHostedEvents")
 }
 
 model Account {
