@@ -10,6 +10,7 @@ const {paymentRouter}=require('./routes/payment')
 
 
 
+
 app.use(express.json());
 app.use(cors({
   origin: '*', // Allow all origins
