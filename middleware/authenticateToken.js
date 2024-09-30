@@ -17,7 +17,7 @@ const authenticateToken = async (req, res, next) => {
         return res.status(404).json({ message: 'User not found' });
       }
 
-      req.user = { ...userPayload, role: user.role };
+      req.user = user;
       next();
     } else {
       return res.status(403).json({ message: 'Invalid or expired token' });

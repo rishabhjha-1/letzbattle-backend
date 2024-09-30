@@ -21,7 +21,6 @@ eventRouter.post("/", authenticateToken, async (req, res) => {
   if (!name || !date || !entryFees || !prize || !seatsLeft) {
     return res.status(400).json({ error: "Missing required fields" });
   }
-
   try {
     // Create the event, associating the current user as the host
     const newEvent = await prisma.event.create({
