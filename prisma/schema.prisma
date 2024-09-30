@@ -29,6 +29,9 @@ model Event {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   Participant Participant[]
+  // Relation to the User model as the host
+  host       User          @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  hostId     String        // Foreign key to User (who is the event creator)
 
 
 }
@@ -46,6 +49,8 @@ model Participant {
   phoneNumber String
   event       Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId     String // Foreign key to Event
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String  // Foreign key to User
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -70,8 +75,10 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Relation to events they host
+// Relation to the events they have participated in
+  Participant Participant[]
+    // Relation to events they host
+  Event       Event[]     // This will be a one-to-many relation where a user can host multiple event
 }
 
 model Account {

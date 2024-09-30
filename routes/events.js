@@ -191,6 +191,7 @@ eventRouter.post('/:eventId/participants', authenticateToken, async (req, res) =
         email,
         phoneNumber,
         eventId, // Link to the event
+        userId: req.user.id,
       },
     });
 
@@ -217,7 +218,21 @@ eventRouter.get('/:eventId/participants',authenticateToken, async (req, res) => 
     // Get all participants for the event
     const participants = await prisma.participant.findMany({
       where: { eventId: eventId },
+      select: {
+        id: true,
+        captainName: true,
+        teamName: true,
+        player1Name: true,
+        player2Name: true,
+        player3Name: true,
+        player4Name: true,
+        player5Name: true,
+        email: true,
+        phoneNumber: true,
+        userId: true,  // Include the userId
+      },
     });
+
 
     res.status(200).json({ participants });
   } catch (error) {
