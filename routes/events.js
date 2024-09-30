@@ -145,7 +145,11 @@ eventRouter.get('/:id', async (req, res) => {
 eventRouter.get('/', async (req, res) => {
   try {
     // Retrieve all events from the database
-    const events = await prisma.event.findMany();
+    const events = await prisma.event.findMany({
+      include: {
+        Participant: true, // This includes the participants in each event
+      },
+    });
     res.status(200).json({ events });
   } catch (error) {
     console.error('Error fetching events:', error.message);
