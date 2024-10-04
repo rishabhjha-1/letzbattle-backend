@@ -88,6 +88,13 @@ model User {
   Event       Event[]     // This will be a one-to-many relation where a user can host multiple event
 }
 
+model Contact {
+  id               String        @id @default(cuid())
+  name             String
+  email            String
+  message          String
+}
+
 model Account {
   userId            String
   type              String

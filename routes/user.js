@@ -70,6 +70,27 @@ userRouter.put('/',authenticateToken,async(req,res)=>{
     console.error(err)
   }
 })
+
+userRouter.post('/contact',async(req,res)=>{
+  const {name,email,message}=req.body;
+  if(!name || !email || !message){
+    return res.status(404).json('missing attributes')
+  }
+  try{
+   const contact= await prisma.contact.create({
+      data:{
+        name,
+        email,
+        message
+      }
+    })
+    res.status(201).json({message:"Contact created successfully",contact:contact})
+  }
+  catch(err){
+    console.error(err)
+  }
+
+})
 module.exports={
     userRouter:userRouter
 }
