@@ -15,6 +15,11 @@ enum USEROLE {
   USER
 }
 
+enum EVENTTYPE {
+  EVENT
+  SCRIMS
+}
+
 model Event {
   id          String        @id @default(cuid())
   name        String
@@ -28,6 +33,7 @@ model Event {
   seatsLeft   Int
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  eventType   EVENTTYPE     @default(EVENT)
   Participant Participant[]
   reviewed    Boolean       @default(false)
   // Relation to the User model as the host

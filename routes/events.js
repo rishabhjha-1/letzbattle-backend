@@ -3,6 +3,7 @@ const eventRouter=express();
 const authenticateToken = require("../middleware/authenticateToken");
 const { PrismaClient } = require('@prisma/client');
 const prisma = require('../config/prismaClient');
+const {transporter}=require('../config/nodemailer');
 
 eventRouter.post("/", authenticateToken, async (req, res) => {
   const {
@@ -15,6 +16,7 @@ eventRouter.post("/", authenticateToken, async (req, res) => {
     isopen,
     expired,
     image,
+    eventType
   } = req.body;
 
   // Validate required fields
@@ -35,6 +37,7 @@ eventRouter.post("/", authenticateToken, async (req, res) => {
         expired,
         image,
         hostId: req.user.id, // Associate the event with the authenticated user
+        eventType
       },
     });
 
@@ -64,6 +67,28 @@ eventRouter.get("/my-events", authenticateToken, async (req, res) => {
   } catch (error) {
     console.error("Error fetching events:", error.message);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+eventRouter.post('/send-email', async (req, res) => {
+  const { to, subject, text } = req.body;
+
+ 
+
+  // Email options
+  let mailOptions = {
+    from: 'letzbattle.tech@gmail.com',
+    to: to,
+    subject: subject,
+    text: text,
+  };
+
+  try {
+    // Send email
+    let info = await transporter.sendMail(mailOptions);
+    res.status(200).send(`Email sent: ${info.response}`);
+  } catch (error) {
+    res.status(500).send(`Error sending email: ${error}`);
   }
 });
 
