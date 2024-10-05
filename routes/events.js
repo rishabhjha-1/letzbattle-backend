@@ -55,11 +55,18 @@ eventRouter.get("/my-events", authenticateToken, async (req, res) => {
 
     if (req.user.role === "ADMIN") {
       // Admins can see all events
-      events = await prisma.event.findMany();
+      events = await prisma.event.findMany({
+        include: {
+          Participant: true, // This includes the participants in each event
+        },
+      });
     } else {
       // Regular users can see only events they have created
       events = await prisma.event.findMany({
         where: { hostId: req.user.id },
+        include: {
+          Participant: true, // This includes the participants in each event
+        },
       });
     }
 
