@@ -100,7 +100,6 @@ eventRouter.post('/send-email', async (req, res) => {
 });
 
 eventRouter.post("/send-email-batch", async (req, res) => {
-  console.log('triggered')
   const { emails, subject, text } = req.body;
 
   if (!emails || !Array.isArray(emails)) {
@@ -111,23 +110,20 @@ eventRouter.post("/send-email-batch", async (req, res) => {
   const successEmails = [];
 
   try {
-    // Process emails one by one, collecting successes and failures
-    const emailResults = await Promise.all(
-      emails.map(async (email) => {
-        try {
-          await transporter.sendMail({
-            from: 'nexgenbattles.tech@gmail.com',
-            to: email,
-            subject,
-            text,
-          });
-          successEmails.push(email); // Mark email as successfully sent
-        } catch (error) {
-          console.error(`Failed to send email to ${email}:`, error);
-          failedEmails.push(email); // Mark email as failed
-        }
-      })
-    );
+    for (const email of emails) {
+      try {
+        await transporter.sendMail({
+          from: 'nexgenbattles.tech@gmail.com',
+          to: email,
+          subject,
+          text,
+        });
+        successEmails.push(email);
+      } catch (error) {
+        console.error(`Failed to send email to ${email}:`, error);
+        failedEmails.push(email);
+      }
+    }
 
     res.status(200).json({
       success: true,
@@ -140,6 +136,7 @@ eventRouter.post("/send-email-batch", async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to process email batch." });
   }
 });
+
 
 
 
