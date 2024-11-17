@@ -43,7 +43,30 @@ userRouter.post('/onboard', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 })
-
+userRouter.post('/subscribed',authenticateToken,async(req,res)=>{
+  try{
+    const user=await prisma.user.findUnique({
+      where:{
+        id:req.user.id
+      }
+    })
+    if(!user){
+      return res.status(404).json({error:"User not found"})
+    }
+    const updatedUser= await prisma.user.update({
+      where:{
+        id:req.user.id
+      },
+      data:{
+        subscribed:true,
+        subscribedDate: new Date()
+      }
+    })
+    res.status(200).json({message:"User subscribed successfully",user:updatedUser})
+  }catch(err){
+    console.error(err)
+  }
+})
 userRouter.put('/',authenticateToken,async(req,res)=>{
   const data = req.body
   try{
