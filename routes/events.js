@@ -84,7 +84,7 @@ eventRouter.post('/send-email', async (req, res) => {
 
   // Email options
   let mailOptions = {
-    from: 'letzbattle.tech@gmail.com',
+    from: 'nexgenbattles.tech@gmail.com',
     to: to,
     subject: subject,
     text: text,
@@ -98,6 +98,50 @@ eventRouter.post('/send-email', async (req, res) => {
     res.status(500).send(`Error sending email: ${error}`);
   }
 });
+
+eventRouter.post("/send-email-batch", async (req, res) => {
+  console.log('triggered')
+  const { emails, subject, text } = req.body;
+
+  if (!emails || !Array.isArray(emails)) {
+    return res.status(400).json({ error: "Invalid email list" });
+  }
+
+  const failedEmails = [];
+  const successEmails = [];
+
+  try {
+    // Process emails one by one, collecting successes and failures
+    const emailResults = await Promise.all(
+      emails.map(async (email) => {
+        try {
+          await transporter.sendMail({
+            from: 'nexgenbattles.tech@gmail.com',
+            to: email,
+            subject,
+            text,
+          });
+          successEmails.push(email); // Mark email as successfully sent
+        } catch (error) {
+          console.error(`Failed to send email to ${email}:`, error);
+          failedEmails.push(email); // Mark email as failed
+        }
+      })
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Email processing complete.",
+      successEmails,
+      failedEmails,
+    });
+  } catch (error) {
+    console.error("Error processing email batch:", error);
+    res.status(500).json({ success: false, message: "Failed to process email batch." });
+  }
+});
+
+
 
 // Edit an event (only allow the creator or admin to edit)
 eventRouter.put("/:id", authenticateToken, async (req, res) => {
