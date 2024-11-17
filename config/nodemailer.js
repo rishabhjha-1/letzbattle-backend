@@ -4,7 +4,14 @@ let transporter = nodemailer.createTransport({
     auth: {
       user: 'nexgenbattles.tech@gmail.com', // Your email address
       pass: process.env.EMAIL_PASS  // Your email password or app password
-    }
+    },
+    secure: true, // Use TLS (SSL)
+    tls: {
+        rejectUnauthorized: false, // Allow self-signed certificates if needed
+    },
+    pool: true,
+    maxConnections: 5, // Restrict simultaneous connections
+    rateLimit: 2, 
   });
   module.exports={
     transporter
