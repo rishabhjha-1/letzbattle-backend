@@ -36,6 +36,7 @@ model Event {
   eventType   EVENTTYPE     @default(EVENT)
   Participant Participant[]
   reviewed    Boolean       @default(false)
+  isOpen      Boolean?       @default(true)
   // Relation to the User model as the host
   host       User          @relation(fields: [hostId], references: [id], onDelete: Cascade)
   hostId     String        // Foreign key to User (who is the event creator)

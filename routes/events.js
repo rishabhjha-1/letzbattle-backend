@@ -121,8 +121,10 @@ eventRouter.post("/send-email-batch", async (req, res) => {
         successEmails.push(email);
         await delay(2000);
       } catch (error) {
-        console.error(`Failed to send email to ${email}:`, error);
-        failedEmails.push(email);
+        if (!successEmails.includes(email)) {
+          failedEmails.push(email);
+          console.error(`Failed to send email to ${email}:`, error.message);
+        }
       }
     }
 
