@@ -8,7 +8,6 @@ const { userRouter } = require('./routes/user');
 const { eventRouter } = require('./routes/events');
 const {paymentRouter}=require('./routes/payment')
 
-require('dotenv').config();
 
 
 app.use(express.json());
