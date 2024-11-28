@@ -10,6 +10,7 @@ const {paymentRouter}=require('./routes/payment')
 
 require('dotenv').config();
 
+
 app.use(express.json());
 app.use(cors({
   origin: '*', // Allow all origins
