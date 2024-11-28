@@ -1,7 +1,7 @@
 // prisma/schema.prisma
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      ="postgresql://LetzkbattleDb_owner:0ZHwXC1WDFdh@ep-mute-violet-a5nein9k-pooler.us-east-2.aws.neon.tech/LetzkbattleDb?sslmode=require"
   // uncomment next line if you use Prisma <5.10
   // directUrl = env("DATABASE_URL_UNPOOLED")
 }
